@@ -8,30 +8,21 @@ class HashTableEntry:
         self.value = value
         self.next = None
 
+
 class HashTable:
     """
-    A hash table with `capacity` buckets
-    that accepts string keys.
+    A hash table that with `capacity` buckets
+    that accepts string keys
+
+    Implement this.
     """
-    
-    def __init__(self, capacity):
-        self.prime = 1099511628211
-        self.offset = 14695981039346656037
-        self.capacity = capacity
-        self.storage = [None] * self.capacity
 
     def fnv1(self, key):
         """
         FNV-1 64-bit hash function
+
         Implement this, and/or DJB2.
         """
-        hash_bytes = key.encode()
-        total = self.offset
-    
-        for b in hash_bytes:
-            total += b  * self.prime
-        
-        return total        
 
     def djb2(self, key):
         """
@@ -39,15 +30,14 @@ class HashTable:
 
         Implement this, and/or FNV-1.
         """
-        pass
 
     def hash_index(self, key):
         """
         Take an arbitrary key and return a valid integer index
         between within the storage capacity of the hash table.
         """
-        return self.fnv1(key) % self.capacity
-#         return djb2.fnv1(key) % self.capacity
+        #return self.fnv1(key) % self.capacity
+        return self.djb2(key) % self.capacity
 
     def put(self, key, value):
         """
@@ -57,8 +47,6 @@ class HashTable:
 
         Implement this.
         """
-        index = self.hash_index(key)
-        self.storage[index] = HashTableEntry(key, value)      
 
     def delete(self, key):
         """
@@ -68,8 +56,6 @@ class HashTable:
 
         Implement this.
         """
-        index = self.hash_index(key)
-        self.storage[index] = None
 
     def get(self, key):
         """
@@ -79,8 +65,6 @@ class HashTable:
 
         Implement this.
         """
-        index = self.hash_index(key)
-        return self.storage[index]        
 
     def resize(self):
         """
@@ -89,14 +73,6 @@ class HashTable:
 
         Implement this.
         """
-        self.capacity *= 2
-        
-        for entry in self.storage:
-            
-            if entry != None:                
-            
-                self.delete(entry.key)
-                self.put(entry.key, entry.value)
 
 if __name__ == "__main__":
     ht = HashTable(2)
