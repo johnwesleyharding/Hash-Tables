@@ -1,94 +1,72 @@
 class HashTableEntry:
-    """
-    Hash Table entry, as a linked list node.
-    """
 
     def __init__(self, key, value):
+        
         self.key = key
         self.value = value
         self.next = None
 
+
 class HashTable:
-    """
-    A hash table with `capacity` buckets
-    that accepts string keys.
-    """
     
     def __init__(self, capacity):
+        
         self.prime = 1099511628211
         self.offset = 14695981039346656037
         self.capacity = capacity
         self.storage = [None] * self.capacity
 
     def fnv1(self, key):
-        """
-        FNV-1 64-bit hash function
-        Implement this, and/or DJB2.
-        """
+
         hash_bytes = key.encode()
         total = self.offset
     
         for b in hash_bytes:
-            total += b  * self.prime
-        
-        return total        
+            
+            total *= b * self.prime
+#             total ^= b
+
+        return total
 
     def djb2(self, key):
-        """
-        DJB2 32-bit hash function
 
-        Implement this, and/or FNV-1.
-        """
         pass
 
     def hash_index(self, key):
-        """
-        Take an arbitrary key and return a valid integer index
-        between within the storage capacity of the hash table.
-        """
+
         return self.fnv1(key) % self.capacity
-#         return djb2.fnv1(key) % self.capacity
 
     def put(self, key, value):
-        """
-        Store the value with the given key.
-
-        Hash collisions should be handled with Linked List Chaining.
-
-        Implement this.
-        """
+        
         index = self.hash_index(key)
-        self.storage[index] = HashTableEntry(key, value)      
+        
+        if self.storage[index] == None:
+            self.storage[index] = HashTableEntry(key, value)
+        
+        else:
+            
+            node = self.storage[index]
+            
+            while node.next != None:
+                
+                node = node.next
+            
+            node.next = HashTableEntry(key, value)
 
     def delete(self, key):
-        """
-        Remove the value stored with the given key.
-
-        Print a warning if the key is not found.
-
-        Implement this.
-        """
+        
         index = self.hash_index(key)
         self.storage[index] = None
 
     def get(self, key):
-        """
-        Retrieve the value stored with the given key.
-
-        Returns None if the key is not found.
-
-        Implement this.
-        """
+        
         index = self.hash_index(key)
-        return self.storage[index]        
+        
+        if self.stoage[index] != None:
+            return self.storage[index].value
 
     def resize(self):
-        """
-        Doubles the capacity of the hash table and
-        rehash all key/value pairs.
-
-        Implement this.
-        """
+        
         self.capacity *= 2
         
         for entry in self.storage:
