@@ -40,17 +40,18 @@ class HashTable:
         
         index = self.hash_index(key)
         
-        if self.storage[index] == None:
+        if self.storage[index] == None or self.storage[index].key == key:
+            
             self.storage[index] = HashTableEntry(key, value)
         
         else:
-            
+
             node = self.storage[index]
-            
-            while node.next != None:
                 
+            while node.next != None and node.next.key != key:
+
                 node = node.next
-            
+
             node.next = HashTableEntry(key, value)
 
     def delete(self, key):
@@ -61,20 +62,35 @@ class HashTable:
     def get(self, key):
         
         index = self.hash_index(key)
-        if self.stoage[index] != None:
-            return self.storage[index].value
+        node = self.storage[index]
+        
+        if node != None:
+            
+            while node.key != key and node.next != None:
+                
+                node = node.next
+                
+            if node.key == key:
+                
+                return node.value
 
     def resize(self):
         
+        storage = self.storage
         self.capacity *= 2
+        self.storage = [None] * self.capacity
         
-        for entry in self.storage:
+        for entry in storage:
             
-            if entry != None:                
-            
-                self.delete(entry.key)
+            if entry != None:
+                
                 self.put(entry.key, entry.value)
-
+                
+                while entry.next != None:
+                    
+                    entry = entry.next
+                    self.put(entry.key, entry.value)
+                
 if __name__ == "__main__":
     ht = HashTable(2)
 
