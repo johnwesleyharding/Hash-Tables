@@ -23,9 +23,10 @@ class HashTable:
     
         for b in hash_bytes:
             
-            total *= b * self.prime
-#             total ^= b
-
+            total *= self.prime
+            total ^= b
+            total &= 0xffffffffffffffff
+            
         return total
 
     def djb2(self, key):
@@ -57,7 +58,37 @@ class HashTable:
     def delete(self, key):
         
         index = self.hash_index(key)
-        self.storage[index] = None
+        node = self.storage[index]
+        
+        if node == None:
+            
+            return 'Key not found'
+        
+        if node.key == key:
+            
+            if node.next != None:
+                
+                self.storage[index] = node.next
+                
+            else:
+                
+                self.storage[index] = None
+        
+        else:
+            
+            while node.key != key and node.next != None:
+                
+                prev = node
+                node = node.next
+                
+            if node.key == key:
+                
+                prev.next = node.next
+                node = None
+                
+            else:
+                
+                return 'Key not found'
 
     def get(self, key):
         
