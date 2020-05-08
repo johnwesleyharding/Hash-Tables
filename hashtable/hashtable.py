@@ -15,6 +15,7 @@ class HashTable:
         self.offset = 14695981039346656037
         self.capacity = capacity
         self.storage = [None] * self.capacity
+        self.keycount = 0
 
     def fnv1(self, key):
 
@@ -43,6 +44,7 @@ class HashTable:
         
         if self.storage[index] == None or self.storage[index].key == key:
             
+            self.keycount += self.storage[index] == None
             self.storage[index] = HashTableEntry(key, value)
         
         else:
@@ -53,7 +55,12 @@ class HashTable:
 
                 node = node.next
 
+            self.keycount += node.next == None
             node.next = HashTableEntry(key, value)
+            
+        if self.keycount >= self.capacity * .7:
+            
+            self.resize(self.capacity * 2)
 
     def delete(self, key):
         
@@ -73,6 +80,7 @@ class HashTable:
             else:
                 
                 self.storage[index] = None
+                self.keycount -= 1
         
         else:
             
@@ -85,11 +93,16 @@ class HashTable:
                 
                 prev.next = node.next
                 node = None
+                self.keycount -= 1
                 
             else:
                 
                 return 'Key not found'
-
+        
+        if 8 < self.keycount < self.capacity * .2:
+            
+            self.resize(self.capacity // 2)
+            
     def get(self, key):
         
         index = self.hash_index(key)
@@ -105,10 +118,15 @@ class HashTable:
                 
                 return node.value
 
-    def resize(self):
+    def resize(self, size = -1):
         
         storage = self.storage
-        self.capacity *= 2
+        
+        if size == -1:
+            
+            size = self.capacity * 2
+            
+        self.capacity = max(int(size), 8)
         self.storage = [None] * self.capacity
         
         for entry in storage:
